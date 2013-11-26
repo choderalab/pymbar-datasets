@@ -1,8 +1,8 @@
 pymbar-datasets
 ===============
 
----------------
 8proteins
+---------------
 
 Calculates the heat capacity as a function of temperature for a
 simulation of 8 proteins.
@@ -17,8 +17,8 @@ This data set originally caused a crash because the dynamic range of
 the free energies was too large when the weights were stored in
 non-logarithmic form.
 
+alchemical-large-datasets/
 ---------------
-alchemical-large-datasets
 
 Files to be analyzed using alchemical-gromacs.py
 
@@ -35,9 +35,9 @@ Directory contains:
 38states/
     dhdl.*.xvg
     out38states.txt
----------------
-gas-properties.
 
+gas-properties/
+---------------
 From Cassiano Gomes-Aimoli and Ed Maginn.
 
 Uses MBAR to interpolate the properties of TraPPE methane force field
