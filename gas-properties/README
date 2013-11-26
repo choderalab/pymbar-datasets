@@ -1,0 +1,12 @@
+- This package contains the input files and the Python scripts to perform MBAR calculations with data in different states (temperatures AND pressures) using the NPT ensemble. The molecular dynamics simulations were carried out using LAMMPS, in three different pressures (50, 70 and 90 MPa). For each pressure 16 temperatures (ranging from 300 to 600 K) were considered, totaling 48 independent simulations.
+
+Package description:
+
+- data.py: extracts data from LAMMPS log files (for pressures of 50, 70 and 90 MPa) and creates the "empty" state files for pressures without samples (60 and 80 MPa). The number of states without samples where MBAR estimation is desired can be defined by changing the values of the variables "include_zeros" and "empty_Pstart", for temperatures and pressures respectively. In this example, two equally spaced new temperatures were included between each isobaric simulation and two new isobars (60 and 80 MPa) were estimated without any simulation performed in those pressures. The total number of studied states in this example (including those with samples) is 230.
+
+- run_mbar_individual.py: performs MBAR calculation and dump the results (data files and plots) for different temperatures at each pressure alone. The reference values for methane in each pressure (obtained from NIST) were also included for the sake of comparison.
+
+- run_mbar_all.py: performs MBAR calculation and dump the results (data files and plots) for all states analyzed at once (temperatures and pressures).
+
+PS. Although not displayed in the plots for simplicity, the uncertainties in all properties were calculated using error propagation standard formulas (using the Uncertainties Python package).
+

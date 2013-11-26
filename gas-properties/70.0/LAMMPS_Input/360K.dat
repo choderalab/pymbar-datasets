@@ -1,0 +1,78 @@
+log			LAMMPS.4
+#################################################################################################
+# Cassiano Aimoli, aimoli@gmail.com                                     			#
+# Pure CH4 simulation using TraPPE force field							#
+#                                                                       			#
+#Compound	Epsilon (K)				Sigma (A)			    	#
+# CH4		148.0 (0.294106213559 kcal/mol)		3.73				       	#
+#												#
+#################################################################################################
+echo none
+########################### Initialization ######################################################
+
+#>>>Constants
+
+variable atm2MPa equal 0.101325			#Convertion factor: atm to MPa
+
+#>>>Files management
+
+variable lammps_input index lammps_input.dat	#Identifies the input files
+
+#>>>Fluid conditions
+
+variable T equal 360.15				#Temperature (K) - NPT simulations
+variable P equal 70.0/${atm2MPa}		#Pressure (MPa) - NPT simulations
+
+#>>>Simulation parameters
+
+variable cutoff equal 14.92			#Cutoff (lenght unit)
+variable dt equal 1.0				#Timestep (time unit)
+
+variable run_eq equal 5000000			#Number of timesteps during equilibration
+variable run_prod equal 5000000			#Number of timesteps during production
+
+variable therm_out equal 1000.0			#Thermodynamic output frequency - log file
+
+variable seed equal 123456789.0			#Random seed for velocity command (integer)
+variable Tdamp equal 100.0			#Temperature damping parameter (fix commands)
+variable Pdamp equal 1000.0			#Pressure damping parameter (fix commands)
+variable etol equal 1.0e-4			#Energy tolerance for minimize command
+variable ftol equal 1.0e-6			#Force tolerance for minimize command
+variable maxiter equal 1000.0			#Max iterations of minimizer
+variable maxeval equal 100000.0			#Max number of force/energy evaluations
+
+########### >>>Molecular interactions
+
+units			real				#fs, A, atm, K, kcal/mol
+atom_style		full				#Molecular + charges
+pair_style		lj/cut ${cutoff}		#Lennard-Jones
+pair_modify		mix arithmetic tail yes		#Arithmetic - Lorentz-Berthelot; Tail Yes: Long Range corrections (Energy and Pressure)
+
+########################### Atom Definition #####################################################
+
+read_data		${lammps_input}
+
+velocity 		all create ${T} ${seed} mom yes rot yes dist gaussian
+minimize 		${etol} ${ftol} ${maxiter} ${maxeval}
+
+########################### Settings ############################################################
+
+timestep		${dt}									
+fix			fnpt all npt temp ${T} ${T} ${Tdamp} iso ${P} ${P} ${Pdamp}
+
+########################### Equilibration #######################################################
+
+run			${run_eq}
+reset_timestep 		0
+
+########################### Production ##########################################################
+
+########### >>>Basic output
+
+thermo			${therm_out}
+thermo_style		custom step press vol temp pe ke etotal enthalpy evdwl ecoul etail elong ebond eangle edihed eimp emol
+
+########### >>>Run
+
+run			${run_prod}
+
