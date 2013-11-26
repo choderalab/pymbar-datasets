@@ -35,3 +35,15 @@ Directory contains:
 38states/
     dhdl.*.xvg
     out38states.txt
+---------------
+gas-properties.
+
+From Cassiano Gomes-Aimoli and Ed Maginn.
+
+Uses MBAR to interpolate the properties of TraPPE methane force field
+in two dimensions. See gas-properties README for more information.
+Two notes; requires a lot of memory (>6GB) so is a good stress test,
+and hopefully we can get the memory required down. Also, requires the
+installation of the included uncertainties package to run the
+analysis.
+
