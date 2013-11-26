@@ -1,7 +1,7 @@
 pymbar-datasets
 ===============
 
-8proteins
+8proteins/
 ---------------
 
 Calculates the heat capacity as a function of temperature for a
