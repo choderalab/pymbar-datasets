@@ -12,7 +12,7 @@ import numpy as np
 from numpy import *
 from math import *
 import pymbar
-import timeseries
+from pymbar import timeseries
 import commands
 import os
 import os.path
@@ -22,7 +22,7 @@ import time
 # PARAMETERS
 #=============================================================================================
 correlated_data = 1  # Set "0" for uncorrelated original data and "1" to use subsampling
-nominal_Pstart = [50.0,70.0,90.0] # NPT input pressure (nominal value) - MPa
+nominal_Pstart = [50.0, 70.0, 90.0] # NPT input pressure (nominal value) - MPa
 N_CH4 = 512 # Number of CH4 molecules on the simulations
 N_CO2 = 0 # Number of CO2 molecules on the simulations
 N_total = N_CO2 + N_CH4 # Total Number of molecules on the simulations
@@ -227,6 +227,8 @@ for directory in processed_data:
         
         # Initialize MBAR
         print "Running MBAR..."
+        import pdb
+        pdb.set_trace()
         mbar = pymbar.MBAR(u_kln, N_k, verbose = True, method = 'adaptive', relative_tolerance = 1.0e-10, initial_f_k = f_k)
     else:
         print "Running MBAR..."
@@ -380,34 +382,34 @@ for directory in processed_data:
     SS_MBARdev = numpy.zeros([K],numpy.float64)
 
     # Concatenate averages and deviations into the same array
-    temperature_dev = unumpy.uarray((temperature,dtemperature))
+    temperature_dev = unumpy.uarray(temperature,dtemperature)
 
-    temperature_std_dev = unumpy.uarray((temperature_std,dtemperature_std))
+    temperature_std_dev = unumpy.uarray(temperature_std,dtemperature_std)
 
-    pressure_dev = unumpy.uarray((pressure,dpressure))
+    pressure_dev = unumpy.uarray(pressure,dpressure)
 
-    pressure_std_dev = unumpy.uarray((pressure_std,dpressure_std))
+    pressure_std_dev = unumpy.uarray(pressure_std,dpressure_std)
 
-    hconf_STDdev = unumpy.uarray((hconf_STD,dhconf_STD))
-    hconf_MBARdev = unumpy.uarray((hconf_MBAR,dhconf_MBAR))
+    hconf_STDdev = unumpy.uarray(hconf_STD,dhconf_STD)
+    hconf_MBARdev = unumpy.uarray(hconf_MBAR,dhconf_MBAR)
 
-    hconf_STDdev = unumpy.uarray((hconf_STD,dhconf_STD))
-    hconf_MBARdev = unumpy.uarray((hconf_MBAR,dhconf_MBAR))
+    hconf_STDdev = unumpy.uarray(hconf_STD,dhconf_STD)
+    hconf_MBARdev = unumpy.uarray(hconf_MBAR,dhconf_MBAR)
 
-    volume_STDdev = unumpy.uarray((volume_STD,dvolume_STD))
-    volume_MBARdev = unumpy.uarray((volume_MBAR,dvolume_MBAR))
+    volume_STDdev = unumpy.uarray(volume_STD,dvolume_STD)
+    volume_MBARdev = unumpy.uarray(volume_MBAR,dvolume_MBAR)
 
-    volume2_STDdev = unumpy.uarray((volume2_STD,dvolume2_STD))
-    volume2_MBARdev = unumpy.uarray((volume2_MBAR,dvolume2_MBAR))
+    volume2_STDdev = unumpy.uarray(volume2_STD,dvolume2_STD)
+    volume2_MBARdev = unumpy.uarray(volume2_MBAR,dvolume2_MBAR)
 
-    vol_hconf_STDdev = unumpy.uarray((vol_hconf_STD,dvol_hconf_STD))
-    vol_hconf_MBARdev = unumpy.uarray((vol_hconf_MBAR,dvol_hconf_MBAR))
+    vol_hconf_STDdev = unumpy.uarray(vol_hconf_STD,dvol_hconf_STD)
+    vol_hconf_MBARdev = unumpy.uarray(vol_hconf_MBAR,dvol_hconf_MBAR)
 
-    uconf_STDdev = unumpy.uarray((uconf_STD,duconf_STD))
-    uconf_MBARdev = unumpy.uarray((uconf_MBAR,duconf_MBAR))
+    uconf_STDdev = unumpy.uarray(uconf_STD,duconf_STD)
+    uconf_MBARdev = unumpy.uarray(uconf_MBAR,duconf_MBAR)
 
-    uconf_hconf_STDdev = unumpy.uarray((uconf_hconf_STD,duconf_hconf_STD))
-    uconf_hconf_MBARdev = unumpy.uarray((uconf_hconf_MBAR,duconf_hconf_MBAR))
+    uconf_hconf_STDdev = unumpy.uarray(uconf_hconf_STD,duconf_hconf_STD)
+    uconf_hconf_MBARdev = unumpy.uarray(uconf_hconf_MBAR,duconf_hconf_MBAR)
 
     # rho (kg/m3)
     rho_STDdev = ((Cmass+2*Omass)*N_CO2+(Cmass+4*Hmass)*N_CH4)/Avog/(volume_STDdev*1E-30)
