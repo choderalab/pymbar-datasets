@@ -227,8 +227,6 @@ for directory in processed_data:
         
         # Initialize MBAR
         print "Running MBAR..."
-        import pdb
-        pdb.set_trace()
         mbar = pymbar.MBAR(u_kln, N_k, verbose = True, method = 'adaptive', relative_tolerance = 1.0e-10, initial_f_k = f_k)
     else:
         print "Running MBAR..."
