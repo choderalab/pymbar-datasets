@@ -8,7 +8,7 @@ import numpy
 from numpy import *
 from math import *
 import pymbar # for MBAR analysis
-import timeseries # for timeseries analysis
+from pymbar import timeseries # for timeseries analysis
 import commands
 import os
 import os.path
@@ -268,7 +268,7 @@ temperatures0 = lines0[0].split()
 num_temps0 = len(temperatures0)   #This used to be K1
 
 # Initialize float vectors to hold temperatures
-temperature_vec0 = zeros([num_temps0], float32) # temperature_k[k] is temperature of temperature index k in K
+temperature_vec0 = zeros([num_temps0]) # temperature_k[k] is temperature of temperature index k in K
 
 # Convert string list of temperatures to a float vector
 	
