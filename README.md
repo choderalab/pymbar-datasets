@@ -47,3 +47,11 @@ and hopefully we can get the memory required down. Also, requires the
 installation of the included uncertainties package to run the
 analysis.
 
+Notes
+-----
+
+The driver scripts 8proteins/analyzer.py and gas-properties/run_mbar_all.py
+have an optional parameter DUMP_DATA_HDF at the top of each script.  By
+setting this flag to True and running, you can save a machine-readable
+version of the dataset to be used for testing and benchmarking your
+pymbar installation.
