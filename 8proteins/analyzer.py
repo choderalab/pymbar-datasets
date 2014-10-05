@@ -27,6 +27,7 @@ increment2 = 0.4  # Temperature increment for transition zone (dynamic, needs as
 #=========================================================
 # PARAMETERS
 #=========================================================
+DUMP_DATA_HDF = False  # Set to True to dump u_kn, N_k, and s_n to an HDF file
 data_directory = os.path.join('in_mbar')
 out_directory = os.path.join('out_mbar')
 temperature_list_filename = os.path.join(data_directory, 'temperatures')
@@ -381,6 +382,11 @@ print "MBAR routines completed, Preparing Data to Compute Expectations..."
 print "."
 print "."
 print "."
+
+if DUMP_DATA_HDF:
+    print("Trying to dump data to HDF5 file for use in pymbar integration tests.")
+    pymbar.testsystems.pymbar_datasets.save(name="8proteins", u_kn=mbar.u_kn, N_k=mbar.N_k)
+    print("Done dumping HDF5.")
 
 #========================================================================
 # Prep E_kt

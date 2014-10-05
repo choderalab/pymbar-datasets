@@ -21,6 +21,7 @@ import time
 #=============================================================================================
 # PARAMETERS
 #=============================================================================================
+DUMP_DATA_HDF = False  # Set to True to dump u_kn, N_k, and s_n to an HDF file
 correlated_data = 1  # Set "0" for uncorrelated original data and "1" to use subsampling
 nominal_Pstart = ['All'] # NPT input pressure (nominal value) - MPa
 N_CH4 = 512 # Number of CH4 molecules on the simulations
@@ -244,6 +245,12 @@ for directory in processed_data:
     else:
         print "Running MBAR..."
         mbar = pymbar.MBAR(u_kln, N_k, verbose = True, method = 'adaptive', relative_tolerance = 1.0e-10)
+
+    if DUMP_DATA_HDF:
+        print("Trying to dump data to HDF5 file for use in pymbar integration tests.")
+        pymbar.testsystems.pymbar_datasets.save(name="gas-properties", u_kn=mbar.u_kn, N_k=mbar.N_k)
+        print("Done dumping HDF5.")
+
     #=============================================================================================
     # COMPUTING OBSERVABLES
     #=============================================================================================
