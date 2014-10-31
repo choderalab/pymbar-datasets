@@ -1,5 +1,19 @@
 Example donated by Gomes-Aimoli, Abreu, and Maginn
 
+For examples of the full application of property prediction, see:
+  
+"Force field comparison and thermodynamic property calculation of 
+supercritical CO2 and CH4 using molecular dynamics simulations" by Cassiano G. Aimoli, 
+Edward J. Maginn, and Charlles R.A. Abreu, in Fluid Phase Equilibria, 368, pp 80–90, 2014,
+http://dx.doi.org/10.1016/j.fluid.2014.02.001
+
+and 
+
+"Thermodynamic Properties of Supercritical Mixtures of Carbon Dioxide and Methane: 
+A Molecular Simulation Study" by Cassiano G. Aimoli,  Edward J. Maginn, and Charlles 
+R.A. Abreu, in Journal of Chemical & Engineering Data, 59 (10), pp 3041–3054, 2014, 
+http://dx.doi.org/10.1021/je500120v
+
 Requires installing the uncertainties package ('pip install uncertainties')
 
 - This package contains the input files and the Python scripts to
