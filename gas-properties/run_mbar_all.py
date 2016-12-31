@@ -13,7 +13,7 @@ from numpy import *
 from math import *
 import pymbar
 from pymbar import timeseries
-import commands
+import subprocess
 import os
 import os.path
 import sys
@@ -21,7 +21,7 @@ import time
 #=============================================================================================
 # PARAMETERS
 #=============================================================================================
-DUMP_DATA_HDF = False  # Set to True to dump u_kn, N_k, and s_n to an HDF file
+DUMP_DATA_HDF = True  # Set to True to dump u_kn, N_k, and s_n to an HDF file
 correlated_data = 1  # Set "0" for uncorrelated original data and "1" to use subsampling
 nominal_Pstart = ['All'] # NPT input pressure (nominal value) - MPa
 N_CH4 = 512 # Number of CH4 molecules on the simulations
@@ -78,11 +78,11 @@ for directory in processed_data:
     plot_directory = plots[Pind]
     NIST_directory = NIST_data[Pind]
     Pind = Pind + 1
-    
-    print "Reading input files from %s directory..." % directory
+
+    print("Reading input files from %s directory..." % directory)
     # Read Temperature
     filename = os.path.join(directory,'temperature.dat')
-    print "Reading %s..." % filename
+    print("Reading %s..." % filename)
     infile = open(filename, 'r')
     elements = infile.readline().split()
     K = len(elements)
@@ -90,32 +90,32 @@ for directory in processed_data:
     for k in range(K):
         temperature[k] = float(elements[k])
     infile.close()
-    
+
     # Read Pressure
     filename = os.path.join(directory,'pressure.dat')
-    print "Reading %s..." % filename
+    print("Reading %s..." % filename)
     infile = open(filename, 'r')
     elements = infile.readline().split()
     pressure = zeros([K], float64)
     for k in range(K):
         pressure[k] = float(elements[k])
     infile.close()
-    
+
     # Determine maximum number of snapshots in all simulations
     filename = os.path.join(directory,'hconf.dat')
-    T_max = int(commands.getoutput('wc -l %s' % filename).split()[0])
-    
+    T_max = int(subprocess.check_output('wc -l %s' % filename, shell=True).split()[0])
+
     # Allocate storage for original Hconf
     T_k = zeros([K], int32)
     hconf_original = zeros([K,T_max], float64)
-    
+
     # Read Hconf
     filename = os.path.join(directory,'hconf.dat')
-    print "Reading %s..." % filename
+    print("Reading %s..." % filename)
     infile = open(filename, 'r')
     lines = infile.readlines()
     infile.close()
-    
+
     # Parse data
     for line in lines:
         elements = line.split()
@@ -123,18 +123,18 @@ for directory in processed_data:
             t = T_k[k]
             hconf_original[k,t] = float(elements[k])
             T_k[k] += 1
-    
+
     # Allocate storage for original Volume
     T_k = zeros([K], int32)
     volume_original = zeros([K,T_max], float64)
-    
+
     # Read Volume
     filename = os.path.join(directory,'volume.dat')
-    print "Reading %s..." % filename
+    print("Reading %s..." % filename)
     infile = open(filename, 'r')
     lines = infile.readlines()
     infile.close()
-    
+
     # Parse data
     for line in lines:
         elements = line.split()
@@ -149,7 +149,7 @@ for directory in processed_data:
 
     # Read Uconf
     filename = os.path.join(directory,'uconf.dat')
-    print "Reading %s..." % filename
+    print("Reading %s..." % filename)
     infile = open(filename, 'r')
     lines = infile.readlines()
     infile.close()
@@ -212,7 +212,7 @@ for directory in processed_data:
     for k in range(K):
         if hconf[k,0] == 0:
             N_k[k] = 0
-    
+
     #=============================================================================================
     # RUNNING MBAR
     #=============================================================================================
@@ -226,8 +226,8 @@ for directory in processed_data:
 
     # Read initial guess for free energies (if there is a file)
     if os.path.exists(output_directory + 'f_k.dat'):
-        print " "
-        print "Reading free energies from f_k.dat"
+        print(" ")
+        print("Reading free energies from f_k.dat")
         infile = open(output_directory + 'f_k.dat', 'r')
         lines = infile.readlines()
         infile.close()
@@ -238,18 +238,19 @@ for directory in processed_data:
         f_k = numpy.zeros([K], numpy.float64)
         for k in range(K):
             f_k[k] = float(elements[k])
-        
+
         # Initialize MBAR
-        print "Running MBAR..."
+        print("Running MBAR...")
         mbar = pymbar.MBAR(u_kln, N_k, verbose = True, method = 'adaptive', relative_tolerance = 1.0e-10, initial_f_k = f_k)
     else:
-        print "Running MBAR..."
+        print("Running MBAR...")
         mbar = pymbar.MBAR(u_kln, N_k, verbose = True, method = 'adaptive', relative_tolerance = 1.0e-10)
 
     if DUMP_DATA_HDF:
         print("Trying to dump data to HDF5 file for use in pymbar integration tests.")
         pymbar.testsystems.pymbar_datasets.save(name="gas-properties", u_kn=mbar.u_kn, N_k=mbar.N_k)
         print("Done dumping HDF5.")
+        sys.exit(0)
 
     #=============================================================================================
     # COMPUTING OBSERVABLES
@@ -338,18 +339,18 @@ for directory in processed_data:
             vol_hconfm[k,l,0:N_k[k]] = volume[k,0:N_k[k]] * hconfm[k,l,0:N_k[k]]
             uconf_hconfm[k,l,0:N_k[k]] = uconf[k,0:N_k[k]] * hconfm[k,l,0:N_k[k]]
 
-    print "Calculating observables"
-    print "Hconf..."
+    print("Calculating observables")
+    print("Hconf...")
     (hconf_MBAR, dhconf_MBAR) = mbar.computeExpectations(hconfm)
-    print "Volume..."
+    print("Volume...")
     (volume_MBAR, dvolume_MBAR) = mbar.computeExpectations(volume)
-    print "Volume^2..."
+    print("Volume^2...")
     (volume2_MBAR, dvolume2_MBAR) = mbar.computeExpectations(volume2)
-    print "Volume x Hconf..."
+    print("Volume x Hconf...")
     (vol_hconf_MBAR, dvol_hconf_MBAR) = mbar.computeExpectations(vol_hconfm)
-    print "Uconf..."
+    print("Uconf...")
     (uconf_MBAR, duconf_MBAR) = mbar.computeExpectations(uconf)
-    print "Uconf x Hconf..."
+    print("Uconf x Hconf...")
     (uconf_hconf_MBAR, duconf_hconf_MBAR) = mbar.computeExpectations(uconf_hconfm)
     #=============================================================================================
     # CALCULATING PROPERTIES
@@ -507,7 +508,7 @@ for directory in processed_data:
     #=============================================================================================
     # Write observables
     filename = os.path.join(output_directory,'STD_results.dat')
-    print "Writing final results to '%s'..." % filename
+    print("Writing final results to '%s'..." % filename)
     outfile = open(filename, 'w')
     outfile.write('Temperature(K) Pressure(MPa) Hconf(kcal/mol) dHconf Volume(A3) dV V^2(A6) dV^2 V*Hconf(A3*kcal/mol) dV*Hconf Uconf(kcal/mol) dUconf Uconf*Hconf(kcal/mol) dUconf*Hconf rho(kg/m3) drho aP(1/K) daP kT(1/MPa) dkT Cp_id(J/molK) Cp(J/molK) dCp Cv(J/molK) dCv uJT(K/MPa) duJT SS(m/s) dSS')
     outfile.write('\n')
@@ -573,7 +574,7 @@ for directory in processed_data:
     outfile.close()
 
     filename = os.path.join(output_directory,'MBAR_results.dat')
-    print "Writing final results to '%s'..." % filename
+    print("Writing final results to '%s'..." % filename)
     outfile = open(filename, 'w')
     outfile.write('Temperature(K) Pressure(MPa) Hconf(kcal/mol) dHconf Volume(A3) dV V^2(A6) dV^2 V*Hconf(A3*kcal/mol) dV*Hconf Uconf(kcal/mol) dUconf Uconf*Hconf(kcal/mol) dUconf*Hconf rho(kg/m3) drho aP(1/K) daP kT(1/MPa) dkT Cp_id(J/molK) Cp(J/molK) dCp Cv(J/molK) dCv uJT(K/MPa) duJT SS(m/s) dSS')
     outfile.write('\n')
@@ -639,7 +640,7 @@ for directory in processed_data:
     outfile.close()
 
     # Write free energies
-    print "Writing free energies"
+    print("Writing free energies")
     f_k=mbar.f_k
     K = f_k.size
     outfile = open(output_directory + 'f_k.dat', 'w')
@@ -682,7 +683,7 @@ for directory in processed_data:
     outfile = open(gnuplot_in, 'w')
     outfile.write(gnuplot_input)
     outfile.close()
-    output = commands.getoutput('gnuplot < %(gnuplot_in)s' % vars())
+    output = subprocess.check_output('gnuplot < %(gnuplot_in)s' % vars(), shell=True)
 
     # Coefficient of Thermal Expansion
     filename = os.path.join(plot_directory, 'aP.eps')
@@ -704,7 +705,7 @@ for directory in processed_data:
     outfile = open(gnuplot_in, 'w')
     outfile.write(gnuplot_input)
     outfile.close()
-    output = commands.getoutput('gnuplot < %(gnuplot_in)s' % vars())
+    output = subprocess.check_output('gnuplot < %(gnuplot_in)s' % vars(), shell=True)
 
     # Isothermal Compressibility
     filename = os.path.join(plot_directory, 'kT.eps')
@@ -726,7 +727,7 @@ for directory in processed_data:
     outfile = open(gnuplot_in, 'w')
     outfile.write(gnuplot_input)
     outfile.close()
-    output = commands.getoutput('gnuplot < %(gnuplot_in)s' % vars())
+    output = subprocess.check_output('gnuplot < %(gnuplot_in)s' % vars(), shell=True)
 
     # Isobaric Heat Capacity
     filename = os.path.join(plot_directory, 'Cp.eps')
@@ -748,8 +749,8 @@ for directory in processed_data:
     outfile = open(gnuplot_in, 'w')
     outfile.write(gnuplot_input)
     outfile.close()
-    output = commands.getoutput('gnuplot < %(gnuplot_in)s' % vars())
-    
+    output = subprocess.check_output('gnuplot < %(gnuplot_in)s' % vars(), shell=True)
+
     # Isochoric Heat Capacity
     filename = os.path.join(plot_directory, 'Cv.eps')
     gnuplot_input = """
@@ -764,14 +765,14 @@ for directory in processed_data:
         set label "60 MPa" at 250,30.5 font "Arial,12"
         set label "70 MPa" at 250,31 font "Arial,12"
         set label "80 MPa" at 250,31.5 font "Arial,12"
-        set label "90 MPa" at 250,32 font "Arial,12" 
+        set label "90 MPa" at 250,32 font "Arial,12"
         plot "%(data_STD)s" u 1:24 t "STD estimate" with points pt 7 lc rgb "red" ps 1, "%(data_MBAR)s" u 1:24 t "MBAR optimal estimate" with points pt 6 lc rgb "black" ps 1, "%(NIST1)s" u 1:8 with lines t "NIST", "%(NIST2)s" u 1:8 with lines notitle, "%(NIST3)s" u 1:8 with lines notitle, "%(NIST4)s" u 1:8 with lines notitle, "%(NIST5)s" u 1:8 with lines notitle
         """ % vars()
     outfile = open(gnuplot_in, 'w')
     outfile.write(gnuplot_input)
     outfile.close()
-    output = commands.getoutput('gnuplot < %(gnuplot_in)s' % vars())
-    
+    output = subprocess.check_output('gnuplot < %(gnuplot_in)s' % vars(), shell=True)
+
     # Joule-Thomson Coefficient
     filename = os.path.join(plot_directory, 'uJT.eps')
     gnuplot_input = """
@@ -792,8 +793,8 @@ for directory in processed_data:
     outfile = open(gnuplot_in, 'w')
     outfile.write(gnuplot_input)
     outfile.close()
-    output = commands.getoutput('gnuplot < %(gnuplot_in)s' % vars())
-    
+    output = subprocess.check_output('gnuplot < %(gnuplot_in)s' % vars(), shell=True)
+
     # Speed of Sound
     filename = os.path.join(plot_directory, 'SS.eps')
     gnuplot_input = """
@@ -814,8 +815,8 @@ for directory in processed_data:
     outfile = open(gnuplot_in, 'w')
     outfile.write(gnuplot_input)
     outfile.close()
-    output = commands.getoutput('gnuplot < %(gnuplot_in)s' % vars())
-    
-    output = commands.getoutput('rm %(gnuplot_in)s' % vars())
+    output = subprocess.check_output('gnuplot < %(gnuplot_in)s' % vars(), shell=True)
 
-print "DONE!"
+    output = subprocess.check_output('rm %(gnuplot_in)s' % vars(), shell=True)
+
+print("DONE!")
