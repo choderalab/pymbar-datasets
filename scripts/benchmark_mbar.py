@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 import pymbar
-from pymbar.testsystems.pymbar_datasets import load_gas_data, load_8proteins_data, load_k69_data
+from pymbar_datasets import load_gas_data, load_8proteins_data, load_k69_data
 import time
 
 def load_oscillators(n_states, n_samples):
